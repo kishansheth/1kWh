@@ -1,0 +1,59 @@
+body {
+    font-family: 'Helvetica Neue';
+    line-height: 1.5;
+    margin: 0;
+}
+
+.content {
+    margin: auto;
+    padding: 50px 0;
+    width: 50%;
+}
+
+p {
+    font-size: 20px;
+}
+
+span {
+    font-family: 'Lucida Console', Monaco, monospace;
+    font-size: 16px;
+    background-color: #F2F2F2;
+    padding: 3px 5px;
+    border-radius: 5px;
+    border: 1px solid #AAAAAA;
+}
+
+.graphic-container {
+    width: 100%;
+    padding: 50px 0;
+    text-align: center;
+}
+
+.hero {
+    width: 100%;
+    background: linear-gradient(to left, blue, #3333FF);
+    color: white;
+}
+
+.hero img {
+    width: 200px;
+}
+
+.title {
+    font-size: 50px;
+    font-weight: 700;
+}
+
+.hero a {
+    color: white;
+    font-family: 'Lucida Console', Monaco, monospace;
+    text-decoration: none;
+}
+
+.hero .graphic-container {
+    text-align: left;
+}
+
+a:hover {
+    text-decoration: underline;
+}
