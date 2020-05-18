@@ -1,0 +1,6 @@
+<svg width="247" height="285" viewBox="0 0 247 285" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10 30C10 18.9543 18.9543 10 30 10H217C228.046 10 237 18.9543 237 30V265C237 270.523 232.523 275 227 275H20C14.4771 275 10 270.523 10 265V30Z" stroke="black" stroke-width="20"/>
+<circle cx="124" cy="157" r="77" stroke="black" stroke-width="20"/>
+<circle cx="80" cy="45" r="10" transform="rotate(90 80 45)" fill="black"/>
+<circle cx="43" cy="45" r="10" transform="rotate(90 43 45)" fill="black"/>
+</svg>

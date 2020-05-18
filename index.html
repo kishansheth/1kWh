@@ -86,7 +86,7 @@
                 <div id="area-chart"></div>
                 <div class="graphic-container">
                     <h3>Power Consumption</h3>
-                    <input type="range" name="mySlider" id="kWSlider" min="0" max="500" list="kWsteplist" oninput="changeKW(this)" onchange="changeKW(this)">
+                    <input type="range" name="mySlider" id="kWSlider" min="0" max="500" list="kWsteplist" oninput="changeKW(this.value)" onchange="changeKW(this.value)">
                     <datalist id="kWsteplist"></datalist>
                     <table id="appliances">
                         <tr>
@@ -100,7 +100,7 @@
                     <div><p id="hIndicator">Something</p>h <p id="mIndicator">Something</p> m</div>
                     <div><p id="kWhIndicator">Something</p>kWh</div>
                     <h3>Duration</h3>
-                    <input type="range" name="mySlider" id="hSlider" min="0" max="300" list="hsteplist" oninput="changeH(this)" onchange="changeH(this)">
+                    <input type="range" name="mySlider" id="hSlider" min="0" max="300" list="hsteplist" oninput="changeH(this.value)" onchange="changeH(this.value)">
                     <datalist id="hsteplist"></datalist>
 
                 </div>
@@ -190,16 +190,16 @@
 
             var kWh = kW * h;
 
-            function changeKW(inputObject) {
-                kW = inputObject.value;
+            function changeKW(kWValue) {
+                kW = kWValue;
                 updatekWh();
                 d3.select("rect")
                     .attr("width", kW)
                 
             }
 
-            function changeH(inputObject) {
-                h = height - inputObject.value;
+            function changeH(hValue) {
+                h = height - hValue;
                 updatekWh();
                 d3.select("rect")
                     .attr("y", h)
@@ -238,31 +238,44 @@
 
             // Build Appliance table
             var applianceArray = [  
-                ["Water Heater", 4.0, 3, ],
-                ["Central AC Unit", 3.5, 10, ],
-                ["Dryer", 3.0, 1, ],
-                ["Dishwasher", 1.8, 1, ],
-                ["Microwave", 1.2, .15, ],
-                ["Medium Wall AC Unit", 1.0, 10, ],
-                ["Washing Machine", 0.50, 0.25, ],
-                ["Refrigerator", 0.18, 24, ],
-                ["42\" LCD TV", 0.12, 2, ],
-                ["Ceiling Fan", 0.075, 5, ],
-                ["Incandescent Light Bulb", 0.060, 5, ],
-                ["Charging a Laptop", 0.060, 6, ],
-                ["Charging a Phone", 0.0050, 3, ]
+                ["Water Heater", 4.0, 3, "images/water.svg"],
+                ["Central AC Unit", 3.5, 10, "images/ac.svg"],
+                ["Dryer", 3.0, 1, "images/dryer.svg"],
+                ["Dishwasher", 1.8, 1, "images/dishwasher.svg"],
+                ["Microwave", 1.2, .15, "images/microwave.svg"],
+                ["Medium Wall AC Unit", 1.0, 10, "images/ac.svg"],
+                ["Washing Machine", 0.50, 0.25, "images/washer.svg"],
+                ["Refrigerator", 0.18, 24, "images/fridge.svg"],
+                ["42\" LCD TV", 0.12, 2, "images/tv.svg"],
+                ["Ceiling Fan", 0.075, 5, "images/fan.svg"],
+                ["Incandescent Light Bulb", 0.060, 5, "images/lightbulb.svg"],
+                ["Charging a Laptop", 0.060, 6, "images/laptop.svg"],
+                ["Charging a Phone", 0.0050, 3, "images/mobile.svg"]
             ]
 
             for (appliance of applianceArray) {
                 var table = document.getElementById("appliances");
                 var row = table.insertRow(1);
                 var cell1 = row.insertCell(0);
+                cell1.setAttribute("style", "text-align: center;")
                 var cell2 = row.insertCell(1);
                 var cell3 = row.insertCell(2);
                 cell1.innerHTML = "<img src=\"" + appliance[3] + "\">";
                 cell2.innerHTML = appliance[0];
                 cell3.innerHTML = "<span>" + appliance[1].toPrecision(2) + "</span";
                     
+                // Add onClick event
+                var createClickHandler = function(row) {
+                    return function() {
+                        var avgkWString = row.getElementsByTagName("td")[2].getElementsByTagName("span")[0].innerHTML;
+                        var avgkWFloat = parseFloat(avgkWString);
+                        document.getElementById("kWSlider").value = x(avgkWFloat);
+                    };
+                };
+
+                row.onclick = createClickHandler(row);
+
+
             }
 
         </script>
