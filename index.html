@@ -7,7 +7,7 @@
         <script src="charts/area-chart.js"></script>
         <title>Understanding 1 kWh</title>
     </head>
-    <body onload="buildCharts()">
+    <body>
         <div class="hero">
             <div class="content">
                 <!-- <div class="graphic-container"><i style="color: yellow; font-size: 50px;" class="fas fa-bolt"></i></div> -->
@@ -72,10 +72,36 @@
 
             <p>In order to better understand this multiplication of units, it is helpful to understand what a kilowatt is.</p>
 
+            <p>The kilowatt is a unit of energy transfer. <span>1 kW</span> is equivalent to <span>1000 W</span> (watts).</p>
+
+            <p>Unlike the kWh, the standalone watt and kilowatt have forms similar to our friends the mph and m/s; they represent 
+            the amount of something done during a time interval.</p>
+
+            <p>In this case, <span>1 W</span> represents a certain amount of energy transferred over a one-second interval.
+                Specifically, one joule of energy is transferred per second, or <span>1 J/s</span>.</p>
+
+            <p>To put this in an example, a <span>100 W</span> light bulb requires <span>100 J</span> of energy to enter it each second in order to light up.</p>
+
             <div class="graphic-container">
                 <div id="area-chart"></div>
-                <input type="range" name="mySlider" id=kWSlider min="0" max="370" value="50" onchange="changeKW(this)">
-                <input type="range" name="mySlider" id=hSlider min="0" max="260" value="50" onchange="changeH(this)">
+                <div class="graphic-container">
+                    <h3>Power Consumption</h3>
+                    <table id="appliances">
+                        <tr>
+                            <th>Appliance</th>
+                            <th>Avg. Consumption</th>
+                        </tr>
+                    </table>
+                    <input type="range" name="mySlider" id="kWSlider" min="0" max="500" list="kWsteplist" oninput="changeKW(this)" onchange="changeKW(this)">
+                    <datalist id="kWsteplist"></datalist>
+                    <p id="kWIndicator">Something</p>
+                    <p id="hIndicator">Something</p>
+                    <p id="kWhIndicator">Something</p>
+                    <h3>Duration</h3>
+                    <input type="range" name="mySlider" id="hSlider" min="0" max="300" list="hsteplist" oninput="changeH(this)" onchange="changeH(this)">
+                    <datalist id="hsteplist"></datalist>
+
+                </div>
             </div>
 
             <h3 id="sources">Sources</h3>
@@ -89,8 +115,8 @@
         <script>
             // Set graph dimensions
             var margin = {top: 10, right: 30, bottom: 30, left: 60},
-                width = 460 - margin.left - margin.right;
-                height = 300 - margin.top - margin.bottom;
+                width = 590 - margin.left - margin.right;
+                height = 340 - margin.top - margin.bottom;
 
             var svg = d3.select("#area-chart")
                 .append("svg")
@@ -100,44 +126,106 @@
                     .attr("transform",
                         "translate(" + margin.left + "," + margin.top + ")");
 
+            // Define gradient
+            var defs = svg.append("defs");
+
+            var gradient = defs.append("linearGradient")
+            .attr("id", "svgGradient")
+            .attr("x1", "0%")
+            .attr("x2", "100%")
+            .attr("y1", "0%")
+            .attr("y2", "100%");
+
+            gradient.append("stop")
+            .attr('class', 'start')
+            .attr("offset", "0%")
+            .attr("stop-color", "red")
+            .attr("stop-opacity", 1);
+
+            gradient.append("stop")
+            .attr('class', 'end')
+            .attr("offset", "100%")
+            .attr("stop-color", "blue")
+            .attr("stop-opacity", 1);
+
             var x = d3.scaleLog()
                 .base(10)
                 .domain([0.001, 100])
                 .range([0, width])
+
+            console.log(x(0.01));
             
             logFormat10 = x.tickFormat(10, "")
 
             svg.append("g")
                 .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x).ticks(5).tickFormat(x => x.toPrecision(1)));
+                .call(d3.axisBottom(x).ticks(5).tickFormat(x => x.toPrecision(1).toString()));
+
+            // var kWlist = [[0.005, "Charging an iPhone"]];
+
+            // for (kWitem of kWlist) {
+            //     var listItem = document.createElement("option");
+            //     listItem.innerHTML += y(kWitem[0]);
+            //     document.getElementById("kWsteplist").append(listItem);
+            // }
 
             var y = d3.scaleLinear()
                 .domain([0, 24])
                 .range([height, 0]);
             svg.append("g")
                 .call(d3.axisLeft(y));
+            
+            var hlist = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24];
 
-            var kW = 10;
-            var h = 12;
+            for (hitem of hlist) {
+                var listItem = document.createElement("option");
+                listItem.innerHTML += y(hitem);
+                document.getElementById("hsteplist").appendChild(listItem);
+            }
+
+            var kW = 0.1;
+            var h = 12.0;
+            var kWh = kW * h;
 
             function changeKW(inputObject) {
-                kW = inputObject.value
+                kW = inputObject.value;
+                updatekWh();
                 d3.select("rect")
-                    .attr("width", inputObject.value)
+                    .attr("width", kW)
+                
             }
 
             function changeH(inputObject) {
-                h = inputObject.value
+                h = height - inputObject.value;
+                updatekWh();
                 d3.select("rect")
-                    .attr("y", height - inputObject.value)
-                    .attr("height", inputObject.value)
+                    .attr("y", h)
+                    .attr("height", height - h)
+            }
+
+            function updatekWh() {
+                kWh = x.invert(kW) * y.invert(h);
+                document.getElementById("hIndicator").innerHTML = y.invert(h).toPrecision(2).toString();
+                document.getElementById("kWIndicator").innerHTML = x.invert(kW).toPrecision(2).toString();
+                document.getElementById("kWhIndicator").innerHTML = kWh.toPrecision(2).toString();
             }
 
             var area = svg.append("rect")
                 .attr("x", 0)
                 .attr("y", height - h)
+                .attr("fill", "url(#svgGradient)")
                 .attr("width", width)
                 .attr("height", h);
+
+            svg.selectAll("text")
+                .data([])
+                .enter()
+                .append("text")
+                .attr("x", x(kW))
+                .attr("y", y(h))
+                .attr("fill", "black")
+                .text(kWh.toString())
+
 
         </script>
     </body>
