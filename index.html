@@ -86,17 +86,19 @@
                 <div id="area-chart"></div>
                 <div class="graphic-container">
                     <h3>Power Consumption</h3>
+                    <input type="range" name="mySlider" id="kWSlider" min="0" max="500" list="kWsteplist" oninput="changeKW(this)" onchange="changeKW(this)">
+                    <datalist id="kWsteplist"></datalist>
                     <table id="appliances">
                         <tr>
+                            <th></th>
                             <th>Appliance</th>
                             <th>Avg. Consumption</th>
                         </tr>
                     </table>
-                    <input type="range" name="mySlider" id="kWSlider" min="0" max="500" list="kWsteplist" oninput="changeKW(this)" onchange="changeKW(this)">
-                    <datalist id="kWsteplist"></datalist>
-                    <p id="kWIndicator">Something</p>
-                    <p id="hIndicator">Something</p>
-                    <p id="kWhIndicator">Something</p>
+                    
+                    <div><p id="kWIndicator">Something</p>kW</div>
+                    <div><p id="hIndicator">Something</p>h <p id="mIndicator">Something</p> m</div>
+                    <div><p id="kWhIndicator">Something</p>kWh</div>
                     <h3>Duration</h3>
                     <input type="range" name="mySlider" id="hSlider" min="0" max="300" list="hsteplist" oninput="changeH(this)" onchange="changeH(this)">
                     <datalist id="hsteplist"></datalist>
@@ -185,6 +187,7 @@
 
             var kW = 0.1;
             var h = 12.0;
+
             var kWh = kW * h;
 
             function changeKW(inputObject) {
@@ -205,7 +208,14 @@
 
             function updatekWh() {
                 kWh = x.invert(kW) * y.invert(h);
-                document.getElementById("hIndicator").innerHTML = y.invert(h).toPrecision(2).toString();
+                var format_h = Math.floor(y.invert(h));
+                var decimal_m = (y.invert(h) % 1) * 60;
+                var format_m = Math.floor(decimal_m);
+
+
+
+                document.getElementById("hIndicator").innerHTML = format_h;
+                document.getElementById("mIndicator").innerHTML = format_m;
                 document.getElementById("kWIndicator").innerHTML = x.invert(kW).toPrecision(2).toString();
                 document.getElementById("kWhIndicator").innerHTML = kWh.toPrecision(2).toString();
             }
@@ -226,6 +236,34 @@
                 .attr("fill", "black")
                 .text(kWh.toString())
 
+            // Build Appliance table
+            var applianceArray = [  
+                ["Water Heater", 4.0, 3, ],
+                ["Central AC Unit", 3.5, 10, ],
+                ["Dryer", 3.0, 1, ],
+                ["Dishwasher", 1.8, 1, ],
+                ["Microwave", 1.2, .15, ],
+                ["Medium Wall AC Unit", 1.0, 10, ],
+                ["Washing Machine", 0.50, 0.25, ],
+                ["Refrigerator", 0.18, 24, ],
+                ["42\" LCD TV", 0.12, 2, ],
+                ["Ceiling Fan", 0.075, 5, ],
+                ["Incandescent Light Bulb", 0.060, 5, ],
+                ["Charging a Laptop", 0.060, 6, ],
+                ["Charging a Phone", 0.0050, 3, ]
+            ]
+
+            for (appliance of applianceArray) {
+                var table = document.getElementById("appliances");
+                var row = table.insertRow(1);
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                cell1.innerHTML = "<img src=\"" + appliance[3] + "\">";
+                cell2.innerHTML = appliance[0];
+                cell3.innerHTML = "<span>" + appliance[1].toPrecision(2) + "</span";
+                    
+            }
 
         </script>
     </body>

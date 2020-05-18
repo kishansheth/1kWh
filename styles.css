@@ -66,3 +66,16 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+table {
+    width: 100%;
+    padding: 10px 0;
+    border: 1px solid black;
+    text-align: left;
+    box-shadow: 5px 5px 0px 0px rgba(0,0,0,1);
+    background-color: white;
+}
+
+td, th {
+    padding: 3px 10px;
+}
