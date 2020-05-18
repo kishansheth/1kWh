@@ -3,9 +3,11 @@
     <head>
         <link rel="stylesheet" href="styles.css">
         <script src="https://kit.fontawesome.com/de04d4a6e5.js" crossorigin="anonymous"></script>
+        <script src="https://d3js.org/d3.v4.js"></script>
+        <script src="charts/area-chart.js"></script>
         <title>Understanding 1 kWh</title>
     </head>
-    <body>
+    <body onload="buildCharts()">
         <div class="hero">
             <div class="content">
                 <!-- <div class="graphic-container"><i style="color: yellow; font-size: 50px;" class="fas fa-bolt"></i></div> -->
@@ -38,8 +40,9 @@
             <p>That is, until the end of the month, when you (or perhaps the person in charge of your residence) 
                 receives an electric bill. </p>
     
-            <p>On the bill, your total electricity usage for that month is typically represented in kWh. 
-                For example, it might say your household has consumed <span>900 kWh</span> in the month of July.</p>
+            <p>On the bill, your total electricity usage for that month is typically represented in a unit 
+                you may or may not have seen: kWh. For example, it might say your household has consumed 
+                <span>900 kWh</span> in the month of July.</p>
     
             <div class="graphic-container"><img src="images/bill.svg"></div>
     
@@ -59,9 +62,83 @@
                 After all, mph stands for miles per hour, or number of miles traveled divided by hours. 
                 However, this is <i>not</i> the case for kWh.</p>
 
-            <p>The kWh is actually a multiplication of kW and h. According to official SI naming conventions[1], 
+            <div class="graphic-container"><img src="images/breakdown_times.svg"></div>
+
+            <p>The kWh is actually a multiplication of kW and h. According to official SI naming conventions<sup><a href="#source1">[1]</a></sup>, 
                 it should technically be written kW•h, where (•) signifies multiplication. 
                 However, the representation ‘kWh’ has become a widely accepted shorthand.</p>
+
+            <h3>The kW</h3>
+
+            <p>In order to better understand this multiplication of units, it is helpful to understand what a kilowatt is.</p>
+
+            <div class="graphic-container">
+                <div id="area-chart"></div>
+                <input type="range" name="mySlider" id=kWSlider min="0" max="370" value="50" onchange="changeKW(this)">
+                <input type="range" name="mySlider" id=hSlider min="0" max="260" value="50" onchange="changeH(this)">
+            </div>
+
+            <h3 id="sources">Sources</h3>
+
+            <ol>
+                <li id="source1"><a href="https://www.bipm.org/utils/common/pdf/si-brochure/SI-Brochure-9-EN.pdf#page=33">The International System of Units (SI)</a></li>
+            </ol>
+
         </div>
+
+        <script>
+            // Set graph dimensions
+            var margin = {top: 10, right: 30, bottom: 30, left: 60},
+                width = 460 - margin.left - margin.right;
+                height = 300 - margin.top - margin.bottom;
+
+            var svg = d3.select("#area-chart")
+                .append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                    .attr("transform",
+                        "translate(" + margin.left + "," + margin.top + ")");
+
+            var x = d3.scaleLog()
+                .base(10)
+                .domain([0.001, 100])
+                .range([0, width])
+            
+            logFormat10 = x.tickFormat(10, "")
+
+            svg.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x).ticks(5).tickFormat(x => x.toPrecision(1)));
+
+            var y = d3.scaleLinear()
+                .domain([0, 24])
+                .range([height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+
+            var kW = 10;
+            var h = 12;
+
+            function changeKW(inputObject) {
+                kW = inputObject.value
+                d3.select("rect")
+                    .attr("width", inputObject.value)
+            }
+
+            function changeH(inputObject) {
+                h = inputObject.value
+                d3.select("rect")
+                    .attr("y", height - inputObject.value)
+                    .attr("height", inputObject.value)
+            }
+
+            var area = svg.append("rect")
+                .attr("x", 0)
+                .attr("y", height - h)
+                .attr("width", width)
+                .attr("height", h);
+
+        </script>
     </body>
 </html>

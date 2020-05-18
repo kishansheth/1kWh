@@ -1,6 +1,6 @@
 body {
     font-family: 'Helvetica Neue';
-    line-height: 1.5;
+    line-height: 1.75;
     margin: 0;
 }
 
@@ -44,10 +44,14 @@ span {
     font-weight: 700;
 }
 
+a {
+    font-family: 'Lucida Console', Monaco, monospace;
+    color: black;
+    text-decoration: none;
+}
+
 .hero a {
     color: white;
-    font-family: 'Lucida Console', Monaco, monospace;
-    text-decoration: none;
 }
 
 .hero .graphic-container {
